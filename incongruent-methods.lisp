@@ -35,14 +35,17 @@
 
 (defvar *generic-arity-functions* (make-hash-table :test 'eq))
 
+(defun incongruent-function-p (name)
+  (and (fboundp name)
+       (gethash name *generic-arity-functions*)))
+
 (defun ensure-generic-arity-function (name arity)
   (ensure-dispatcher name)
   (ensure-generic-function (method-name-with-arity name arity))
   (pushnew arity (gethash name *generic-arity-functions*)))
 
 (defun remove-incongruent-function (name)
-  (when (and (fboundp name)
-             (gethash name *generic-arity-functions*))
+  (when (incongruent-function-p name)
     (fmakunbound name)
     (dolist (arity (gethash name *generic-arity-functions*))
       (fmakunbound (method-name-with-arity name arity)))
