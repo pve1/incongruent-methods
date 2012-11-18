@@ -63,7 +63,12 @@
   (when (incongruent-function-p name)
     (fmakunbound name)
     (dolist (arity (gethash name *generic-arity-functions*))
-      (fmakunbound (method-name-with-arity name arity)))
+      (fmakunbound (method-name-with-arity name arity))
+      (remove-method #'find-method-with-arity
+                     (find-method
+                      #'find-method-with-arity
+                      nil `((eql ,name)
+                            (eql ,arity)))))
     (remhash name *generic-arity-functions*)))
 
 ;;;;
