@@ -9,6 +9,11 @@
     (list (first x))
     (symbol x)))
 
+(defun method-parameter-type (x)
+  (etypecase x
+    (list (second x))
+    (t t)))
+
 (defun method-lambda-list-arity (lambda-list)
   (length lambda-list))
 
