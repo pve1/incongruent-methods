@@ -22,27 +22,29 @@
 (defgeneric find-method-with-arity (name arity))
 
 (defun ensure-dispatcher (name)
-  (setf (symbol-function name)
-        (lambda (&rest rest)
-          (apply (find-method-with-arity name
-                                         (method-lambda-list-arity
-                                          rest))
-                 rest)))
-  (setf (compiler-macro-function name)
-        (lambda (form env)
-          (declare (ignore env))
-          (if (eq (car form) 'funcall)
-              (destructuring-bind (funcall (fun-or-quote name)
-                                           &rest args) form
-                `(,funcall (,fun-or-quote
-                            ,(method-name-with-arity
-                              name
-                              (method-lambda-list-arity args)))
-                           ,@args))
-              (destructuring-bind (fun &rest args) form
-                `(,(method-name-with-arity
-                    fun (method-lambda-list-arity args))
-                   ,@args))))))
+  (let* ((func (lambda (&rest args)
+                 (apply (find-method-with-arity
+                         name
+                         (method-lambda-list-arity args))
+                        args))))
+
+    (setf (symbol-function name) func)
+
+    (setf (compiler-macro-function name)
+          (lambda (form env)
+            (declare (ignore env))
+            (if (eq (car form) 'funcall)
+                (destructuring-bind (funcall (fun-or-quote name)
+                                             &rest args) form
+                  `(,funcall (,fun-or-quote
+                              ,(method-name-with-arity
+                                name
+                                (method-lambda-list-arity args)))
+                             ,@args))
+                (destructuring-bind (fun &rest args) form
+                  `(,(method-name-with-arity
+                      fun (method-lambda-list-arity args))
+                     ,@args)))))))
 
 ;;;;
 
