@@ -1,0 +1,5 @@
+(load "incongruent-methods-test.lisp")
+(load "class-methods-test.lisp")
+(princ "OK")
+(terpri)
+(quit)
