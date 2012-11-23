@@ -1,5 +1,23 @@
 (in-package :incongruent-methods)
 
+#+clisp
+(defmethod find-method-imp (gf qualifiers specializers &optional errorp)
+  (find-method gf
+               qualifiers
+               (mapcar
+                (lambda (x)
+                  (etypecase x
+                    (list (clos::intern-eql-specializer (second x)))
+                    (symbol (find-class x))
+                    (class x)))
+                specializers)
+               errorp))
+
+#+sbcl
+(defmethod find-method-imp (gf qualifiers specializers &optional errorp)
+  (find-method gf qualifiers specializers errorp))
+
+
 (defvar *class-principal-methods* (make-hash-table :test 'eq))
 
 (defun add-class-principal-method (name method-lambda-list)
@@ -22,15 +40,18 @@
                       method-name
                       (method-lambda-list-arity lambda-list)))) ;; This works
                   (method
-                   (when gf-with-arity
-                     (find-method
-                      gf-with-arity
-                      nil
-                      lambda-list
-                      nil))))
+                    (when gf-with-arity
+                      (find-method-imp
+                       gf-with-arity
+                       nil
+                       lambda-list))))
              (when method
-               (remove-method gf-with-arity method))))
-    (remhash class-name *class-principal-methods*)))
+               (remove-method gf-with-arity method)
+               (delete (list method-name lambda-list)
+                       (gethash class-name *class-principal-methods*)
+                       :test #'equal))))
+    (unless (gethash class-name *class-principal-methods*)
+      (remhash class-name *class-principal-methods*))))
 
 (defmacro clear-class-methods (name)
   `(eval-when (:compile-toplevel :load-toplevel :execute)

@@ -1,7 +1,7 @@
 (in-package :cl-user)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (require :incongruent-methods)
+  (asdf:load-system 'incongruent-methods)
   (use-package :incongruent-methods))
 
 (define-incongruent-method hello ((me string))

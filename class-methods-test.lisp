@@ -1,7 +1,8 @@
 (in-package :cl-user)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (require :incongruent-methods)
+  (asdf:load-system :incongruent-methods)
+  ;; (require :incongruent-methods)
   (use-package :incongruent-methods))
 
 (defclass hello ()
@@ -75,19 +76,17 @@
     (incongruent-methods::remove-class-principal-methods
      'greeting)
 
-    (multiple-value-bind (val err)
+    (multiple-value-bind (val err1)
         (ignore-errors (greet greeting))
       val
-      (assert err))
+      (assert err1))
 
-    (multiple-value-bind (val err)
+    (multiple-value-bind (val err2)
         (ignore-errors (setf (greet greeting) "Hello"))
       val
-      (assert err))
+      (assert err2))
     :ok))
 
 (class-method-test-1)
 (class-method-test-2)
 (class-method-test-3)
-
-;; remove-class-principal-methods
