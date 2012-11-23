@@ -53,7 +53,8 @@ Example:
     (message me))
 
   (greet ((n integer)) ;; lambda list is actually ((me greeting) (n integer))
-    (message me n))
+    (dotimes (m n)
+      (greet me)))
 
   (greet ((n (eql 42)))
     (some-slot me))
