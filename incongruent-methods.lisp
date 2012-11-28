@@ -84,6 +84,8 @@
 
 (defun ensure-dispatcher (name)
   (let* ((func (lambda (&rest args)
+                 #+debug-incongruent-methods
+                 (format t "Generic dispatch: ~A~%" name)
                  (apply (find-method-with-arity
                          name
                          (method-lambda-list-arity args))
@@ -94,18 +96,26 @@
     (setf (compiler-macro-function name)
           (lambda (form env)
             (declare (ignore env))
-            (if (eq (car form) 'funcall)
-                (destructuring-bind (funcall (fun-or-quote name)
-                                     &rest args) form
-                  `(,funcall (,fun-or-quote
-                              ,(method-name-with-arity
-                                name
-                                (method-lambda-list-arity args)))
-                             ,@args))
-                (destructuring-bind (fun &rest args) form
-                  `(,(method-name-with-arity
-                      fun (method-lambda-list-arity args))
-                    ,@args)))))))
+            (flet ((make-form ()
+                     (if (eq (car form) 'funcall)
+                         (destructuring-bind (funcall (fun-or-quote name)
+                                              &rest args) form
+                           `(,funcall (,fun-or-quote
+                                       ,(method-name-with-arity
+                                         name
+                                         (method-lambda-list-arity args)))
+                                      ,@args))
+                         (destructuring-bind (fun &rest args) form
+                           `(,(method-name-with-arity
+                               fun (method-lambda-list-arity args))
+                             ,@args)))))
+
+              #+debug-incongruent-methods
+              (print form)
+              #+debug-incongruent-methods
+              (print (make-form))
+              #-debug-incongruent-methods
+              (make-form))))))
 
 ;;;;
 
