@@ -69,6 +69,9 @@
                            arity
                            *setf-methods-with-arity*))
 
+(defmethod find-setf-method-with-arity ((name symbol) arity)
+  (%find-method-with-arity name arity *setf-methods-with-arity*))
+
 (defun %remove-method-with-arity (name arity table)
   (let ((ftable (gethash name table)))
     (when ftable
