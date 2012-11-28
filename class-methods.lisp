@@ -47,9 +47,10 @@
                        lambda-list))))
              (when method
                (remove-method gf-with-arity method)
-               (delete (list method-name lambda-list)
-                       (gethash class-name *class-principal-methods*)
-                       :test #'equal))))
+               (setf (gethash class-name *class-principal-methods*)
+                     (delete (list method-name lambda-list)
+                             (gethash class-name *class-principal-methods*)
+                             :test #'equal)))))
     (unless (gethash class-name *class-principal-methods*)
       (remhash class-name *class-principal-methods*))))
 
