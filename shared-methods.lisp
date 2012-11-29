@@ -87,7 +87,7 @@
                       (quote `(setf ,(butlast ;; Hack
                                       (dispatcher-compiler-macro
                                        `(,(intern-shared-method symbol)
-                                         ,@(cons ''dummy args))))
+                                         ,@(append args (list ''dummy)))))
                                     ,new)))))
                  (t whole))))
 
