@@ -36,48 +36,6 @@ Example 2:
       (greet me)))
 
 
-** Define-class
-
-A convenience macro for defining classes is also provided.  The
-symbol "ME" in the body of the methods means the current object (self,
-this etc).  It should also be the first argument when calling methods
-defined using this macro.  Accessors will be converted to incongruent
-methods.
-
-Example:
-
-(define-class greeting ()
-    ((message :accessor message :initform nil)
-     (some-slot :accessor some-slot :initform nil))
-
-  ;; Methods can be defined here, if one wants.
-
-  (greet () ;; lambda list is actually ((me greeting))
-    (message me))
-
-  (greet ((n integer)) ;; lambda list is actually ((me greeting) (n integer))
-    (dotimes (m n)
-      (greet me)))
-
-  (greet ((n (eql 42)))
-    (some-slot me))
-
-  ((setf greet) (new)
-    (setf (message me) new)))
-
-
-(let ((i (make-instance 'greeting :message "Hello")))
-  (greet i))
-
-==> "Hello"
-
-(let ((i (make-instance 'greeting :message "Hello")))
-  (setf (greet i) "Hi")
-  (greet i))
-
-==> "Hi"
-
-
 ** Shared methods
 
 Methods that are "shared" between packages can be also be defined.
@@ -145,4 +103,46 @@ Example:
   TEST-PACKAGE-1::SOMETHING
   I did something!
   Received status: DONE
+
+
+** Define-class
+
+A convenience macro for defining classes is also provided.  The
+symbol "ME" in the body of the methods means the current object (self,
+this etc).  It should also be the first argument when calling methods
+defined using this macro.  Accessors will be converted to incongruent
+methods.
+
+Example:
+
+(define-class greeting ()
+    ((message :accessor message :initform nil)
+     (some-slot :accessor some-slot :initform nil))
+
+  ;; Methods can be defined here, if one wants.
+
+  (greet () ;; lambda list is actually ((me greeting))
+    (message me))
+
+  (greet ((n integer)) ;; lambda list is actually ((me greeting) (n integer))
+    (dotimes (m n)
+      (greet me)))
+
+  (greet ((n (eql 42)))
+    (some-slot me))
+
+  ((setf greet) (new)
+    (setf (message me) new)))
+
+
+(let ((i (make-instance 'greeting :message "Hello")))
+  (greet i))
+
+==> "Hello"
+
+(let ((i (make-instance 'greeting :message "Hello")))
+  (setf (greet i) "Hi")
+  (greet i))
+
+==> "Hi"
 
