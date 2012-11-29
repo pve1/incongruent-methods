@@ -9,5 +9,7 @@
   (:use :cl)
   (:export #:define-incongruent-method
            #:remove-incongruent-function
+           #:define-shared-method
+           #:imcall
            #:define-class
            #:define-class-method))

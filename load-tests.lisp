@@ -1,6 +1,7 @@
 (require :asdf)
 (load "incongruent-methods.asd")
 (load "incongruent-methods-test.lisp")
+(load "shared-methods-test.lisp")
 (load "class-methods-test.lisp")
 (princ "OK")
 (terpri)
