@@ -124,7 +124,7 @@
 
 (defvar *generic-arity-functions* (make-hash-table :test 'equal))
 
-(defmethod incongruent-function-p ((name symbol))
+(defmethod incongruent-function-p ((name t))
   (and (fboundp name)
        (gethash name *generic-arity-functions*)))
 
