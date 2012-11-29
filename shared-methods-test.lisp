@@ -59,9 +59,15 @@
   (setf (imcall 'a-var) 2)
   (assert (= 2 (imcall 'a-var)))
 
-  (flet ((f () 'hello))
-    (assert (string= (imcall (f) "world") "Hello, world")))
+  (setf (imcall :a-var) 1)
+  (assert (= 1 (imcall :a-var)))
+  (setf (imcall :a-var) 2)
+  (assert (= 2 (imcall :a-var)))
 
+  (flet ((f () 'hello)
+         (g () :hello))
+    (assert (string= (imcall (f) "world") "Hello, world"))
+    (assert (string= (imcall (g) "world") "Hello, world")))
   :ok)
 
 (defun shared-methods-test-2 ()

@@ -61,6 +61,11 @@
                       (quote
                        (dispatcher-compiler-macro
                         `(,(intern-shared-method symbol) ,@args))))))
+
+                 ((keywordp method)
+                  (dispatcher-compiler-macro
+                   `(,(intern-shared-method method) ,@args)))
+
                  (t whole))))
     #+debug-incongruent-methods
     (format t "IMCALL compiler-macro whole: ~S~%" whole)
@@ -89,6 +94,14 @@
                                        `(,(intern-shared-method symbol)
                                          ,@(append args (list ''dummy)))))
                                     ,new)))))
+
+                 ((keywordp method)
+                  `(setf ,(butlast ;; Hack
+                           (dispatcher-compiler-macro
+                            `(,(intern-shared-method method)
+                              ,@(append args (list ''dummy)))))
+                         ,new))
+
                  (t whole))))
 
     #+debug-incongruent-methods
