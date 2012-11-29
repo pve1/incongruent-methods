@@ -24,6 +24,9 @@
   (assert (equal (hello "world") "Hello, world"))
   (assert (equal (hello "world" "Hey") "Hey, world"))
   (assert (equal (hello 1) "Hello, number!"))
+
+  (flet ((f () #'hello))
+    (assert (equal (funcall (f) "world") "Hello, world")))
   :ok)
 
 (defun incongruent-methods-test-2 ()
@@ -40,6 +43,20 @@
     (assert err))
   :ok)
 
+(defun incongruent-methods-test-3 ()
+  (assert (equal (incongruent-methods::dispatcher-compiler-macro
+                  '(foo 1 2))
+                 '(foo/2 1 2)))
+  (assert (equal (incongruent-methods::dispatcher-compiler-macro
+                  '(funcall 'foo 1 2))
+                 '(funcall 'foo/2 1 2)))
+  (assert (equal (incongruent-methods::dispatcher-compiler-macro
+                  '(funcall #'foo 1 2))
+                 '(funcall #'foo/2 1 2)))
+  (assert (equal (incongruent-methods::dispatcher-compiler-macro
+                  '(funcall (f) 1 2))
+                 '(funcall (f) 1 2))))
+
 (incongruent-methods-test-1)
 (incongruent-methods-test-2)
-
+(incongruent-methods-test-3)

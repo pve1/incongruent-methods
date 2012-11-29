@@ -85,6 +85,31 @@
                              arity
                              *setf-methods-with-arity*))
 
+(defun dispatcher-compiler-macro (form)
+  (flet ((make-form ()
+           (cond ((eq (car form) 'funcall)
+                  (if (and (listp (second form))
+                           (member (car (second form))
+                                   '(quote function)))
+                      (destructuring-bind (funcall (fun-or-quote name)
+                                           &rest args) form
+                        `(,funcall (,fun-or-quote
+                                    ,(method-name-with-arity
+                                      name
+                                      (method-lambda-list-arity args)))
+                                   ,@args))
+                      form))
+                 (t (destructuring-bind (fun &rest args) form
+                      `(,(method-name-with-arity
+                          fun (method-lambda-list-arity args))
+                        ,@args))))))
+    #+debug-incongruent-methods
+    (print form)
+    #+debug-incongruent-methods
+    (print (make-form))
+    #-debug-incongruent-methods
+    (make-form)))
+
 (defun ensure-dispatcher (name)
   (let* ((func (lambda (&rest args)
                  #+debug-incongruent-methods
@@ -99,27 +124,7 @@
     (setf (compiler-macro-function name)
           (lambda (form env)
             (declare (ignore env))
-            (flet ((make-form ()
-                     (if (eq (car form) 'funcall)
-                         (destructuring-bind (funcall (fun-or-quote name)
-                                              &rest args) form
-                           `(,funcall (,fun-or-quote
-                                       ,(method-name-with-arity
-                                         name
-                                         (method-lambda-list-arity args)))
-                                      ,@args))
-                         (destructuring-bind (fun &rest args) form
-                           `(,(method-name-with-arity
-                               fun (method-lambda-list-arity args))
-                             ,@args)))))
-
-              #+debug-incongruent-methods
-              (print form)
-              #+debug-incongruent-methods
-              (print (make-form))
-              #-debug-incongruent-methods
-              (make-form))))))
-
+            (dispatcher-compiler-macro form)))))
 ;;;;
 
 (defvar *generic-arity-functions* (make-hash-table :test 'equal))
