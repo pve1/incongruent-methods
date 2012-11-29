@@ -15,10 +15,18 @@
 (defgeneric send (object method &rest args))
 
 (defmethod intern-shared-method ((name symbol))
-  (intern (string name) *method-package*))
+  (let ((name (intern (string name) *method-package*)))
+    (unless (incongruent-function-p name)
+      (ensure-dispatcher name))
+    name))
 
 (defmethod intern-shared-method ((name list))
-  (list (first name) (intern-shared-method (second name))))
+  (let ((name (list (first name)
+                    (intern (string (second name))
+                            *method-package*))))
+    (unless (incongruent-function-p name)
+      (ensure-dispatcher name))
+    name))
 
 (defmethod find-shared-method ((name symbol))
   (find-shared-method (string name)))
@@ -26,10 +34,16 @@
 (defmethod find-shared-method ((name string))
   (find-symbol name *method-package*))
 
+(defmethod find-shared-method ((name list))
+  (let ((n (find-shared-method (second name))))
+    (when n
+      (list (first name) n))))
+
 (define-modify-macro internf-shared-method () intern-shared-method)
 
 (defmacro define-shared-method (name method-lambda-list &body body)
-  (let ((interned-name (intern-shared-method name)))
+  (let ((interned-name (or (find-shared-method name)
+                           (intern-shared-method name))))
     `(define-incongruent-method ,interned-name ,method-lambda-list
        ,@body)))
 
@@ -38,7 +52,7 @@
 (defmethod imcall ((method symbol) &rest args)
   (let* ((cache (load-time-value (make-hash-table :test 'eq)))
          (sym (or (gethash method cache)
-                  (let ((s (find-shared-method method)))
+                  (let ((s (intern-shared-method method)))
                     (when s
                       (setf (gethash method cache) s))))))
     (apply (fdefinition sym) args)))
@@ -48,7 +62,7 @@
            (cond ((listp method)
                   (destructuring-bind (quote-or-fun symbol) method
                     (ecase quote-or-fun
-                      (quote `(,(find-shared-method symbol) ,@args)))))
+                      (quote `(,(intern-shared-method symbol) ,@args)))))
                  (t whole))))
     #+debug-incongruent-methods
     (format t "~&IMCALL compiler-macro whole: ~S~%" whole)
@@ -62,7 +76,7 @@
 
 (defun (setf imcall) (new method &rest args)
   (let ((m (find-setf-method-with-arity
-            (find-shared-method method)
+            (intern-shared-method method)
             (1+ (method-lambda-list-arity args)))))
     (apply m new args)))
 
@@ -71,7 +85,7 @@
            (cond ((listp method)
                   (destructuring-bind (quote symbol) method
                     (ecase quote
-                      (quote `(setf (,(find-shared-method symbol) ,@args)
+                      (quote `(setf (,(intern-shared-method symbol) ,@args)
                                     ,new)))))
                  (t whole))))
 
