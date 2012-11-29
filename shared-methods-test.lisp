@@ -58,6 +58,10 @@
   (assert (= 1 (imcall 'a-var)))
   (setf (imcall 'a-var) 2)
   (assert (= 2 (imcall 'a-var)))
+
+  (flet ((f () 'hello))
+    (assert (string= (imcall (f) "world") "Hello, world")))
+
   :ok)
 
 (defun shared-methods-test-2 ()
@@ -65,6 +69,17 @@
               'incongruent-methods.test-package-1::something))
   :ok)
 
+(defun shared-methods-test-3.1 ()
+  (imcall 'echo 'hello)) ;; Should generate style warning.
+
+(define-shared-method echo ((x symbol))
+  x)
+
+(defun shared-methods-test-3 ()
+  (assert (eq 'hello (shared-methods-test-3.1))))
+
+
+
 (shared-methods-test-1)
 (shared-methods-test-2)
-
+(shared-methods-test-3)
