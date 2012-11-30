@@ -6,7 +6,6 @@
 
 (defun clear-shared-methods ()
   (do-symbols (s *method-package*)
-    #-clisp (fmakunbound s)
     (unintern s *method-package*)))
 
 (defgeneric intern-shared-method (thing))
