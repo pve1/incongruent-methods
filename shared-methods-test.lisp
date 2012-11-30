@@ -51,6 +51,7 @@
 (in-package :cl-user)
 
 (defun shared-methods-test-1 ()
+  (assert (= (length (list-shared-methods 'hello)) 1))
 
   (assert (string= (imcall 'hello "world")
                    "Hello, world"))

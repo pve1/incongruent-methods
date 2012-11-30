@@ -41,6 +41,11 @@
     `(define-incongruent-method ,interned-name ,method-lambda-list
        ,@body)))
 
+(defun list-shared-methods (name)
+  (let ((name-symbol (find-shared-method name)))
+    (when name-symbol
+      (list-incongruent-methods name-symbol))))
+
 (defgeneric imcall (method &rest args))
 
 (defmethod imcall ((method symbol) &rest args)

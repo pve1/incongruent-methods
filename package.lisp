@@ -11,6 +11,7 @@
            #:remove-incongruent-function
            #:list-incongruent-methods
            #:define-shared-method
+           #:list-shared-methods
            #:imcall
            #:define-class
            #:define-class-method))
