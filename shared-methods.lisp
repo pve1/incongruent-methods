@@ -5,8 +5,12 @@
 (defvar *method-package* (find-package :incongruent-methods.methods))
 
 (defun clear-shared-methods ()
-  (do-symbols (s *method-package*)
-    (unintern s *method-package*)))
+  (let ((syms))
+    (do-symbols (s *method-package*)
+      (push s syms))
+    (dolist (s syms)
+      (remove-incongruent-function s)
+      (unintern s *method-package*))))
 
 (defgeneric intern-shared-method (thing))
 (defgeneric find-shared-method (name))
