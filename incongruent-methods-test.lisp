@@ -27,10 +27,15 @@
 
   (flet ((f () #'hello))
     (assert (equal (funcall (f) "world") "Hello, world")))
+
+  (assert (= 4 (length (list-incongruent-methods 'hello))))
+
   :ok)
 
 (defun incongruent-methods-test-2 ()
   (incongruent-methods::remove-incongruent-function 'hello)
+
+  (assert (= 0 (length (list-incongruent-methods 'hello))))
 
   (multiple-value-bind (val err)
       (ignore-errors (hello "Hello"))
