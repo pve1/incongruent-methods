@@ -13,7 +13,7 @@
                 specializers)
                errorp))
 
-#+sbcl
+#+(or sbcl ccl)
 (defmethod find-method-imp (gf qualifiers specializers &optional errorp)
   (find-method gf qualifiers specializers errorp))
 
