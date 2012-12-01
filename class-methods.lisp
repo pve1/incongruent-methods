@@ -129,7 +129,7 @@
 ;; Alternatively, one could do
 ;; (put 'define-class
 ;;      'common-lisp-indent-function
-;;      '(4 4 4 &rest (&whole 2 4 &lambda &body))
+;;      '(4 4 2 &rest (&whole 2 4 &lambda &body)))
 ;; in emacs.
 
 (defvar *indentation-hints* (make-hash-table :test 'eq))
@@ -147,6 +147,6 @@
     (when tables-symbol
       (pushnew *indentation-hints* (symbol-value tables-symbol))
       (setf (gethash 'define-class *indentation-hints*)
-            '(4 4 4 &rest (&whole 2 4 &lambda &body))))))
+            '(4 4 2 &rest (&whole 2 4 &lambda &body))))))
 
 (update-indentation-hints)
