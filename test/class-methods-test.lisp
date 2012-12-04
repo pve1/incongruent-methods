@@ -2,7 +2,6 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (asdf:load-system :incongruent-methods)
-  ;; (require :incongruent-methods)
   (use-package :incongruent-methods))
 
 (defclass hello ()
