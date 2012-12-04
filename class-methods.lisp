@@ -1,22 +1,16 @@
 (in-package :incongruent-methods)
 
-#+clisp
-(defmethod find-method-imp (gf qualifiers specializers &optional errorp)
+(defun %find-method (gf qualifiers specializers &optional errorp)
   (find-method gf
                qualifiers
                (mapcar
                 (lambda (x)
                   (etypecase x
-                    (list (clos::intern-eql-specializer (second x)))
+                    (list (closer-mop::intern-eql-specializer (second x)))
                     (symbol (find-class x))
                     (class x)))
                 specializers)
                errorp))
-
-#+(or sbcl ccl)
-(defmethod find-method-imp (gf qualifiers specializers &optional errorp)
-  (find-method gf qualifiers specializers errorp))
-
 
 (defvar *class-principal-methods* (make-hash-table :test 'eq))
 
@@ -41,7 +35,7 @@
                       (method-lambda-list-arity lambda-list)))) ;; This works
                   (method
                     (when gf-with-arity
-                      (find-method-imp
+                      (%find-method
                        gf-with-arity
                        nil
                        lambda-list))))

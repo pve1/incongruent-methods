@@ -143,22 +143,10 @@
             (find-method-with-arity name arity))
           (gethash name *generic-arity-functions*)))
 
-#+sbcl
-(defun generic-function-methods-imp (gf)
-  (sb-mop::generic-function-methods gf))
-
-#+clisp
-(defun generic-function-methods-imp (gf)
-  (clos::generic-function-methods gf))
-
-#+ccl
-(defun generic-function-methods-imp (gf)
-  (ccl::generic-function-methods gf))
-
 (defun list-incongruent-methods (name)
   (let ((gfs (list-incongruent-generic-functions name)))
     (loop :for gf :in gfs
-          :append (generic-function-methods-imp gf))))
+          :append (closer-mop::generic-function-methods gf))))
 
 
 ;;;;
