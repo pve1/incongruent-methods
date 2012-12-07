@@ -2,7 +2,7 @@
 
 ** Basics
 
-Incongruent methods is simple implementation of
+Incongruent methods is a simple implementation of
 incongruent (overloaded) methods using standard CLOS methods.  These
 methods do not support &key, &rest, &optional etc.
 
