@@ -1,5 +1,7 @@
 (in-package :incongruent-methods)
 
+(defgeneric method-name-with-arity (name arity))
+
 (defmethod method-name-with-arity ((name symbol) arity)
   (intern (format nil "~A/~A" name arity)
           (symbol-package name)))
@@ -27,6 +29,8 @@
 
 (defgeneric find-method-with-arity (name arity))
 (defgeneric find-setf-method-with-arity (name arity))
+(defgeneric add-method-with-arity (name arity))
+(defgeneric remove-method-with-arity (name arity))
 
 (defvar *methods-with-arity* (make-hash-table :test 'eq))
 (defvar *setf-methods-with-arity* (make-hash-table :test 'eq))
@@ -128,6 +132,8 @@
 ;;;;
 
 (defvar *generic-arity-functions* (make-hash-table :test 'equal))
+
+(defgeneric incongruent-function-p (name))
 
 (defmethod incongruent-function-p ((name t))
   (and (fboundp name)
